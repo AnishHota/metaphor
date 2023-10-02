@@ -84,7 +84,8 @@ def query_llm(query):
             chain = load_qa_chain(st.session_state.llm, chain_type="stuff")
             docs = db.similarity_search(query) 
             output = chain.run(input_documents=docs, question=query)
-            st.session_state.messages.append((st.session_state.search_prompt, output))
+            st.session_state.messages.append((query, output))
+            return output
     return results
     
 
