@@ -1,0 +1,6 @@
+requests
+langchain==0.0.190
+metaphor_python==0.1.16
+sentence-transformers==2.2.2
+faiss==1.7.4
+transformers==4.33.3
