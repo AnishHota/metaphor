@@ -44,29 +44,47 @@ def input_fields():
 
 def url_content_extract(query_id):
     st.session_state.summarizer = pipeline("summarization")
-    url_content = st.session_state.metaphor.get_contents([st.session_state.url_ids[query_id+1]])
-    summarized = st.session_state.summarizer(url_content.contents[0].extract, min_length=75, max_length=300)
+    embedding = HuggingFaceEmbeddings()
+    st.session_state.url_content = st.session_state.metaphor.get_contents([st.session_state.url_ids[query_id-1]])
+    summarized = st.session_state.summarizer(st.session_state.url_content.contents[0].extract, min_length=75, max_length=300)
     return summarized
+
+def query_search(query):
+    st.session_state.metaphor = Metaphor(st.session_state.metaphor_key)
+    results = st.session_state.metaphor.search(st.session_state.search_prompt, use_autoprompt=True)
+    st.session_state.results_list = defaultdict(str)
+    st.session_state.url_ids = []
+    for i,r in enumerate(results.results):
+        st.session_state.results_list[str(r.title)]=str(r.url)
+        st.session_state.url_ids.append(r.id)
+    st.session_state.messages.append((st.session_state.search_prompt, st.session_state.results_list))
+    return st.session_state.results_list
 
 def query_llm(query):
     results = None
     if not st.session_state.metaphor_key or not st.session_state.hugging_api_key or not st.session_state.search_prompt:
         st.warning(f"Please provide the missing fields.")
-    else:
-        
-        if int(query)>=1 and int(query)<=10:
-            url_content = url_content_extract(int(query))
-            st.session_state.messages.append((list(st.session_state.results_list.keys())[int(query)+1], url_content))
-
-        else:
-            st.session_state.metaphor = Metaphor(st.session_state.metaphor_key)
-            results = st.session_state.metaphor.search(st.session_state.search_prompt, use_autoprompt=True)
-            st.session_state.results_list = defaultdict(str)
-            st.session_state.url_ids = []
-            for i,r in enumerate(results.results):
-                st.session_state.results_list[str(r.title)]=str(r.url)
-                st.session_state.url_ids.append(r.id)
-            st.session_state.messages.append((query, st.session_state.results_list))
+    else: 
+        try:
+            if int(query)>=1 and int(query)<=10:
+                url_content = url_content_extract(int(query))
+                st.session_state.messages.append((int(query),str(list(st.session_state.results_list.keys())[int(query)-1])+":"+str(url_content[0]["summary_text"])))
+                results = str(list(st.session_state.results_list.keys())[int(query)-1])+":"+str(url_content[0]["summary_text"])
+        except:
+            embedding = HuggingFaceEmbeddings()
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap=0, separators=[" ", ",", "\n"])
+            texts = text_splitter.split_text(st.session_state.url_content.contents[0].extract)
+            db = FAISS.from_texts(texts, embedding)
+            os.environ["HUGGINGFACEHUB_API_TOKEN"] = st.session_state.hugging_api_key
+            if "llm" not in st.session_state:
+                st.session_state.llm=HuggingFaceHub(
+                repo_id="google/flan-t5-small",
+                model_kwargs={"temperature":0.2, "max_length":256}
+                )
+            chain = load_qa_chain(st.session_state.llm, chain_type="stuff")
+            docs = db.similarity_search(query)
+            return chain.run(input_documents=docs, question=query)
+    return results
     
 
 def boot():
@@ -74,7 +92,7 @@ def boot():
     input_fields()
     #
     if st.button("Submit prompt"):
-        query_llm(-1)
+        query_search(-1)
     #
     if "messages" not in st.session_state:
         st.session_state.messages = []    
