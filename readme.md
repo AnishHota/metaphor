@@ -1,2 +1,2 @@
-[![Metaphor Demo]
-[https://youtu.be/NXdaQVeEng8](https://www.youtube.com/watch?v=NXdaQVeEng8&feature=youtu.be)
+[Metaphor Demo]
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NXdaQVeEng8?si=C5bSP9hHn86ktk2V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
