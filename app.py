@@ -41,8 +41,17 @@ def input_fields():
     #
 
 def query_llm(query):
-    results = metaphor.search(st.session_state.search_prompt, use_autoprompt=True)
-    st.session_state.messages.append((query, results))
+
+    if int(query)>=1 and int(query)<=10:
+        # url_content = url_content_extract(int(query))
+        print("Inside")
+
+    else:
+        results = metaphor.search(st.session_state.search_prompt, use_autoprompt=True)
+        st.session_state.results_list = []
+        for i,r in enumerate(results.results):
+            st.session_state.results_list.append(str(i+1)+" "+str(r.title)+":"+str(r.url))
+        st.session_state.messages.append((query, results_list))
     return results
 
 def boot():
