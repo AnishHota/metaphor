@@ -56,7 +56,7 @@ def query_llm(query):
         
         if int(query)>=1 and int(query)<=10:
             url_content = url_content_extract(int(query))
-            st.session_state.messages.append((list(st.session_state.results_list.keys())[query+1], url_content))
+            st.session_state.messages.append((list(st.session_state.results_list.keys())[int(query)+1], url_content))
 
         else:
             st.session_state.metaphor = Metaphor(st.session_state.metaphor_key)
