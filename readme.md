@@ -1,2 +1,6 @@
-[Metaphor Demo]
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NXdaQVeEng8?si=C5bSP9hHn86ktk2V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+
+[![Watch the video](https://img.youtube.com/vi/NXdaQVeEng8/hqdefault.jpg)](https://www.youtube.com/embed/NXdaQVeEng8)
+
+[<img src="https://img.youtube.com/vi/NXdaQVeEng8/hqdefault.jpg" width="600" height="300"
+/>](https://www.youtube.com/embed/NXdaQVeEng8)
