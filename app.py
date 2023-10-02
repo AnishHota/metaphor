@@ -68,7 +68,6 @@ def query_llm(query):
                 st.session_state.url_ids.append(r.id)
             st.session_state.messages.append((query, st.session_state.results_list))
     
-    return results
 
 def boot():
     #
